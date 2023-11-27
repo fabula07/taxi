@@ -1,65 +1,91 @@
 <?php
 
-interface Taxi
+abstract class Taxi
 {
-  public function getCar();
-  public function getPrice();
-
+    abstract public function getModel(): string;
+    abstract public function getPrice(): float;
 }
 
-class EconomyTaxi implements Taxi
+// Абстрактный класс создателя такси
+abstract class CreatorTaxi
 {
- public function getCar()
- {
-     // TODO: Implement getCar() method.
- }
+    abstract public function createTaxi(): Taxi;
 
-    public function getPrice()
-  {
-      // TODO: Implement getPrice() method.
-  }
-}
-
-class StandardTaxi implements Taxi
-{
-    public function getCar()
+    public function getTaxi(): string
     {
-        // TODO: Implement getCar() method.
+        $taxi = $this->createTaxi();
+        return $taxi->getModel() . $taxi->getPrice();
     }
+}
 
-    public function getPrice()
-   {
-       // TODO: Implement getPrice() method.
-   }
-}
-class LuxTaxi implements Taxi
+class EconomyCreator extends CreatorTaxi
 {
-  public function getCar()
-  {
-      // TODO: Implement getCar() method.
-  }
-  public function getPrice()
-  {
-      // TODO: Implement getPrice() method.
-  }
+    public function createTaxi(): Taxi
+    {
+        return new class() extends Taxi {
+            public function getModel(): string
+            {
+                return "Economy Car";
+            }
+
+            public function getPrice(): float
+            {
+                return 1;
+            }
+        };
+    }
 }
+
+class StandardCreator extends CreatorTaxi
+{
+    public function createTaxi(): Taxi
+    {
+        return new class() extends Taxi {
+            public function getModel(): string
+            {
+                return "Standard Car";
+            }
+
+            public function getPrice(): float
+            {
+                return 2;
+            }
+        };
+    }
+}
+
+class LuxCreator extends CreatorTaxi
+{
+    public function createTaxi(): Taxi
+    {
+        return new class() extends Taxi {
+            public function getModel(): string
+            {
+                return "Lux Car";
+            }
+
+            public function getPrice(): float
+            {
+                return 3;
+            }
+        };
+    }
+}
+
 class ClientTaxi
 {
-    public function infoGet (Taxi $taxi): string
+    public function infoGet(CreatorTaxi $infoForClient): string
     {
-        return $taxi-> getCar() . $taxi-> getPrice();
+        return $infoForClient->getTaxi();
     }
 }
 
-$economyTaxi = new EconomyTaxi();
-$luxTaxi = new LuxTaxi();
-$standardTaxi = new StandardTaxi();
+$economyCreator = new EconomyCreator();
+$standardCreator = new StandardCreator();
+$luxCreator = new LuxCreator();
 
 $ClientTaxi = new ClientTaxi();
 
-$ClientTaxi->infoGet($economyTaxi);
-$ClientTaxi->infoGet($standardTaxi);
-$ClientTaxi->infoGet($luxTaxi);
-
-
-
+$ClientTaxi->infoGet($economyCreator);
+$ClientTaxi->infoGet($standardCreator);
+$ClientTaxi->infoGet($luxCreator);
